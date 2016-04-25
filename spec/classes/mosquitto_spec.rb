@@ -43,12 +43,12 @@ describe 'mosquitto' do
               'managehome' => true
             })}
 
-            it { should contain_file('/opt/mosquitto/logs').with({
-              'ensure' => 'directory',
-              'owner'  => 'mosquitto',
-              'group'  => 'mosquitto',
-              'mode'   => '0755',
-            })}
+            #it { should contain_file('/opt/mosquitto/logs').with({
+            #  'ensure' => 'directory',
+            #  'owner'  => 'mosquitto',
+            #  'group'  => 'mosquitto',
+            #  'mode'   => '0755',
+            #})}
 
             it { should contain_file('/var/log/mosquitto').with({
               'ensure' => 'directory',
@@ -63,16 +63,14 @@ describe 'mosquitto' do
                 'group'  => 'root',
                 'mode'   => '0644',
               }).
-              with_content(/^broker.id=0$/).
-              with_content(/^port=9092$/).
-              with_content(/^log.dirs=\/app\/kafka\/log$/)
+              with_content(/\sport\s1883\s/)
             }
 
 
             it { should_not contain_file('/tmpfs') }
             it { should_not contain_mount('/tmpfs') }
 
-            it { should contain_supervisor__service('mosquitto-broker').with({
+            it { should contain_supervisor__service('mosquitto').with({
               'ensure'      => 'present',
               'enable'      => true,
               'command'     => '/opt/mosquitto/bin/mosquitto.sh /etc/mosquitto/mosquitto.conf',
@@ -113,7 +111,7 @@ describe 'mosquitto' do
               :gid              => 456,
               :group            => 'mosquittogroup',
               :uid              => 123,
-              :user             => 'mosquittoauser',
+              :user             => 'mosquittouser',
               :user_description => 'Mosquitto MQTT broker user',
               :user_home        => '/home/mosquittouser',
             }}
@@ -123,7 +121,7 @@ describe 'mosquitto' do
 
             it { should contain_user('mosquittouser').with({
               'ensure'     => 'present',
-              'home'       => '/home/mosquittoauser',
+              'home'       => '/home/mosquittouser',
               'shell'      => '/bin/bash',
               'uid'        => 123,
               'comment'    => 'Mosquitto MQTT broker user',
@@ -141,8 +139,7 @@ describe 'mosquitto' do
             let(:params) {{
               :port => 9093,
             }}
-
-            it { should contain_file(default_broker_configuration_file).with_content(/^port=9093$/) }
+            it { should contain_file(default_broker_configuration_file).with_content(/\sport\s9093\s/) }
           end
         end
 
@@ -150,14 +147,14 @@ describe 'mosquitto' do
     end
   end
 
-  context 'unsupported operating system' do
-    describe 'kafka without any parameters on Debian' do
-      let(:facts) {{
-        :osfamily => 'Debian',
-      }}
+  # context 'unsupported operating system' do
+  #   describe 'kafka without any parameters on Debian' do
+  #     let(:facts) {{
+  #       :osfamily => 'Debian',
+  #     }}
 
-      it { expect { should contain_class('kafka') }.to raise_error(Puppet::Error,
-        /The kafka module is not supported on a Debian based system./) }
-    end
-  end
+  #     it { expect { should contain_class('kafka') }.to raise_error(Puppet::Error,
+  #       /The kafka module is not supported on a Debian based system./) }
+  #   end
+  # end
 end

@@ -1,11 +1,12 @@
-# == Class mosquitto::params
 #
+# == Class mosquitto::params
 class mosquitto::params {
   
   $base_dir = '/opt/mosquitto' # Base directory under which the Mosquitto RPM is installed
   $package_name = 'mosquitto'
   $package_manage = true
-  $package_ensure = installed
+  # $package_ensure = installed
+  $package_ensure = present
 
   # $etc_directory = $::operatingsystem ? {
   #   /(?i:FreeBSD)/ => '/usr/local/etc',
@@ -15,7 +16,7 @@ class mosquitto::params {
   $command             = "${base_dir}/bin/mosquitto.sh"
 
   $service_name        = 'mosquitto'
-  $service_ensure      = running
+  $service_ensure      = 'present'
   $service_autorestart = true
   $service_enable      = true
   $service_manage      = true
@@ -35,6 +36,7 @@ class mosquitto::params {
 
   $gid                 = 53042
   $group               = 'mosquitto'
+  $group_ensure        = 'present'
 
   $service_stderr_logfile_keep    = 10
   $service_stderr_logfile_maxsize = '20MB'

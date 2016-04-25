@@ -13,4 +13,11 @@ class mosquitto::install inherits mosquitto {
     group  => $mosquitto::group,
     mode   => '0755',
   }
+
+  if $limits_manage == true {
+    limits::fragment {
+      "${user}/soft/nofile": value => $limits_nofile;
+      "${user}/hard/nofile": value => $limits_nofile;
+    }
+  }
 }

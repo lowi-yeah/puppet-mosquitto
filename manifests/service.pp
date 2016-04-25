@@ -2,8 +2,8 @@
 #
 class mosquitto::service inherits mosquitto {
 
-  if ! ($mosquitto::service_ensure in [ 'running', 'stopped' ]) {
-    fail('service_ensure parameter must be running or stopped')
+  if ! ($mosquitto::service_ensure in [ 'absent', 'present' ]) {
+    fail('service_ensure parameter must be absent or present')
   }
 
   if $mosquitto::service_manage == true {
@@ -12,13 +12,20 @@ class mosquitto::service inherits mosquitto {
       ensure                 => $mosquitto::service_ensure,
       enable                 => $mosquitto::service_enable,
       command                => "${mosquitto::command} ${config}",
+      # command                => "${mosquitto::command}",
+      config_file            => "${config}",
       directory              => '/',
+      environment            => '',
       user                   => $mosquitto::user,
       group                  => $mosquitto::group,
       autorestart            => $mosquitto::service_autorestart,
       startsecs              => $mosquitto::service_startsecs,
       stopwait               => $mosquitto::service_stopsecs,
       retries                => $mosquitto::service_retries,
+      stdout_logfile_maxsize => $mosquitto::service_stdout_logfile_maxsize,
+      stdout_logfile_keep    => $mosquitto::service_stdout_logfile_keep,
+      stderr_logfile_maxsize => $mosquitto::service_stderr_logfile_maxsize,
+      stderr_logfile_keep    => $mosquitto::service_stderr_logfile_keep,
       stopsignal             => 'INT',
       stopasgroup            => true,
       require                => Class['::supervisor'],
