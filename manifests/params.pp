@@ -37,6 +37,7 @@ class mosquitto::params {
   $gid                 = 53042
   $group               = 'mosquitto'
   $group_ensure        = 'present'
+  $hostname            = undef
 
   $service_stderr_logfile_keep    = 10
   $service_stderr_logfile_maxsize = '20MB'
