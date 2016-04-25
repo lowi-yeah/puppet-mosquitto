@@ -114,15 +114,9 @@ Then use librarian-puppet to install (or update) the Puppet modules.
 
 # Configuration
 
-* See [init.pp](manifests/init.pp) and [broker.pp](manifests/broker.pp) for the list of currently supported
+* See [init.pp](manifests/init.pp) for the list of currently supported
   configuration parameters.  These should be self-explanatory.
 * See [params.pp](manifests/params.pp) for the default values of those configuration parameters.
-
-Of special note is the class parameter `$config_map`:  You can use this parameter to "inject" arbitrary Kafka config
-settings via Hiera/YAML into the Kafka broker configuration file (default name: `server.properties`).  However you
-should not re-define config settings via `$config_map` that already have explicit Puppet class parameters (such as
-`$broker_id`).  See the examples below for more information on `$config_map` usage.
-
 
 <a name="usage"></a>
 
@@ -143,49 +137,16 @@ should not re-define config settings via `$config_map` that already have explici
 
 
 A "full" single-node example that includes the deployment of [supervisord](http://www.supervisord.org/) via
-[puppet-supervisor](https://github.com/miguno/puppet-supervisor) and
-[ZooKeeper](http://zookeeper.apache.org/) via [puppet-zookeeper](https://github.com/miguno/puppet-zookeeper).
-Here, both ZooKeeper and Kafka are running on the same machine.  The Kafka broker will listen on port `9092/tcp` and
-will connect to the ZooKeeper server running at `localhost:2181`.  That's a nice setup for your local development
-laptop or CI server, for instance.
+[puppet-supervisor](https://github.com/miguno/puppet-supervisor).
+The Mosquitto broker will listen on port `1883/tcp`.
 
 
 ```yaml
 ---
 classes:
-  - kafka::service
+  - mosquitto::service
   - supervisor
-  - zookeeper::service
 ```
-
-A more sophisticated example that overrides some of the default settings and also demonstrates the use of `$config_map`.
-In this example, the broker connects to the ZooKeeper server `zookeeper1`.
-Take a look at [Kafka's Java/JVM configuration notes](https://kafka.apache.org/documentation.html#java) as well as
-recommended [production configurations](https://kafka.apache.org/documentation.html#prodconfig).
-
-```yaml
----
-classes:
-  - kafka::service
-  - supervisor
-
-## Kafka
-kafka::broker_id: 0
-kafka::config_map:
-  log.roll.hours: 48
-  log.retention.hours: 48
-kafka::kafka_heap_opts: '-Xms2G -Xmx2G -XX:NewSize=256m -XX:MaxNewSize=256m'
-kafka::kafka_opts: '-XX:CMSInitiatingOccupancyFraction=70 -XX:+PrintTenuringDistribution'
-kafka::zookeeper_connect:
-  - 'zookeeper1:2181'
-
-# Optional: Manage /etc/security/limits.conf to tune the maximum number
-# of open files, which is a typical setting you must change for Kafka
-# production environments.  Default: false (do not manage)
-kafka::limits_manage: true
-kafka::limits_nofile: 65536
-```
-
 
 <a name="manifests"></a>
 
@@ -203,12 +164,12 @@ TBD
 
 To manually start, stop, restart, or check the status of the Kafka broker service, respectively:
 
-    $ sudo supervisorctl [start|stop|restart|status] kafka-broker
+    $ sudo supervisorctl [start|stop|restart|status] mosquitto
 
 Example:
 
     $ sudo supervisorctl status
-    kafka-broker                          RUNNING    pid 16461, uptime 3 days, 09:22:38
+    mosquitto                          RUNNING    pid 16461, uptime 3 days, 09:22:38
 
 
 <a name="log-files"></a>
@@ -217,77 +178,14 @@ Example:
 
 _Note: The locations below may be different depending on the Kafka RPM you are actually using._
 
-* Kafka log files: `/var/log/kafka/*.log`
+* Kafka log files: `/var/log/mosquitto/*.log`
 * Supervisord log files related to Kafka processes:
-    * `/var/log/supervisor/kafka-broker/kafka-broker.out`
+    * `/var/log/supervisor/mosquitto/mosquitto.out`
     * `/var/log/supervisor/kafka-broker/kafka-broker.err`
 * Supervisord main log file: `/var/log/supervisor/supervisord.log`
 
 
 <a name="custom-zk-root"></a>
-
-# Custom ZooKeeper chroot (experimental)
-
-Kafka supports custom ZooKeeper chroots, which is useful for multi-tenant ZooKeeper setups.
-This Puppet module has experimental support for this feature.
-
-
-## Creating the chroot
-
-If Kafka will share a ZooKeeper cluster with other users, you might want to create a znode in ZooKeeper in which to
-store the data of your Kafka cluster.
-
-First, you must create the znode manually yourself.  You can use `zkCli.sh` that ships with ZooKeeper, or you can use
-the Kafka built-in `zookeeper-shell`.  The following example creates the znode `/my_kafka`.
-
-```bash
-$ kafka zookeeper-shell <zookeeper_host>:2182
-Connecting to kraken-zookeeper
-Welcome to ZooKeeper!
-JLine support is enabled
-
-WATCHER::
-
-WatchedEvent state:SyncConnected type:None path:null
-[zk: kraken-zookeeper(CONNECTED) 0] create /my_kafka kafka
-Created /my_kafka
-```
-
-You can use whatever chroot znode path you like.  The second argument (```data```) is arbitrary.  In this example we
-used 'kafka'.
-
-
-## Configuring Kafka to use the ZooKeeper chroot
-
-When configuring the ZooKeeper connection string you must only add the custom chroot _to the last entry_ in the
-`zookeeper_connect` array.
-
-```yaml
-# Irrelevant config settings have been omitted/snipped
-kafka::brokers:
-  broker1:
-    # WRONG!
-    #
-    # This Hiera configuration is the same as if you had added the following (incorrect) setting
-    # to the normal Kafka configuration file `config/server.properties`:
-    #
-    #    zookeeper.connect=zkserver1:2181/my_kafka,zkserver2:2181/my_kafka
-    #
-    zookeeper_connect:
-      - 'zkserver1:2181/my_kafka'
-      - 'zkserver2:2181/my_kafka'
-
-    # CORRECT
-    #
-    # This Hiera configuration is the same as if you had added the following (correct) setting
-    # to the normal Kafka configuration file `config/server.properties`:
-    #
-    #    zookeeper.connect=zkserver1:2181,zkserver2:2181/my_kafka
-    #
-    zookeeper_connect:
-      - 'zkserver1:2181'
-      - 'zkserver2:2181/my_kafka'
-```
 
 
 <a name="development"></a>
@@ -333,12 +231,7 @@ Of particular interest are:
 
 <a name="todo"></a>
 
-# TODO
-
-* Enhance in-line documentation of Puppet manifests.
-* Add more unit tests and specs.
-* Add rollback/remove functionality to completely purge Kafka related packages and configuration files from a machine.
-
+TBD
 
 <a name="changelog"></a>
 
@@ -349,7 +242,7 @@ See [CHANGELOG](CHANGELOG.md).
 
 <a name="contributing"></a>
 
-# Contributing to puppet-kafka
+# Contributing to puppet-mosquitto
 
 Code contributions, bug reports, feature requests etc. are all welcome.
 
@@ -361,7 +254,7 @@ to send patches and pull requests to puppet-kafka.
 
 # License
 
-Copyright © 2014 Michael G. Noll
+Copyright © 2014 Stephan Lohwasser
 
 See [LICENSE](LICENSE) for licensing information.
 
@@ -370,12 +263,4 @@ See [LICENSE](LICENSE) for licensing information.
 
 # References
 
-Puppet modules similar to this module:
-
-* [wikimedia/puppet-kafka](https://github.com/wikimedia/puppet-kafka) -- focuses on Debian as the target OS, and
-  apparently also supports Kafka mirroring and jmxtrans monitoring (the latter for sending JVM and Kafka broker metrics
-  to tools such as Ganglia or Graphite)
-
-The test setup of this module was derived from:
-
-* [puppet-module-skeleton](https://github.com/garethr/puppet-module-skeleton)
+This Puppet module is basically just an adaption of [miguno/puppet-kafka](https://github.com/miguno/puppet-kafka) 
