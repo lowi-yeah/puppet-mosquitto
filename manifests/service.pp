@@ -8,31 +8,27 @@ class mosquitto::service inherits mosquitto {
 
   if $service_manage == true {
     supervisor::service {
-      $mosquitto::service_name:
-        ensure                 => $mosquitto::service_ensure,
-        enable                 => $mosquitto::service_enable,
+      $service_name:
+        ensure                 => $service_ensure,
+        enable                 => $service_enable,
         environment            => '', # this is required as otherwise the copilation fails
-        command                => "${mosquitto::command} ${mosquitto::command_params}",
+        command                => "${command} ${command_params}",
         directory              => '/',
-        user                   => $mosquitto::user,
-        group                  => $mosquitto::group,
-        autorestart            => $mosquitto::service_autorestart,
-        startsecs              => $mosquitto::service_startsecs,
-        stopwait               => $mosquitto::service_stopsecs,
-        retries                => $mosquitto::service_retries,
-        stdout_logfile_maxsize => $mosquitto::service_stdout_logfile_maxsize,
-        stdout_logfile_keep    => $mosquitto::service_stdout_logfile_keep,
-        stderr_logfile_maxsize => $mosquitto::service_stderr_logfile_maxsize,
-        stderr_logfile_keep    => $mosquitto::service_stderr_logfile_keep,
-        stopsignal             => 'INT',
-        stopasgroup            => true,
-        # require                => Class['::supervisor'],
-        require                => [ Class['::supervisor'] ],
+        user                   => $user,
+        group                  => $group,
+        autorestart            => $service_autorestart,
+        startsecs              => $service_startsecs,
+        retries                => $service_retries,
+        stdout_logfile_maxsize => $service_stdout_logfile_maxsize,
+        stdout_logfile_keep    => $service_stdout_logfile_keep,
+        stderr_logfile_maxsize => $service_stderr_logfile_maxsize,
+        stderr_logfile_keep    => $service_stderr_logfile_keep,
+        require                => [ Class['mosquitto::config'], , Class['::supervisor'] ],
     }
 
-    if $mosquitto::service_enable == true {
+    if $service_enable == true {
       exec { 'restart-mosquitto':
-        command     => "supervisorctl restart ${mosquitto::service_name}",
+        command     => "supervisorctl restart ${service_name}",
         path        => ['/usr/bin', '/usr/sbin', '/sbin', '/bin'],
         user        => 'root',
         refreshonly => true,

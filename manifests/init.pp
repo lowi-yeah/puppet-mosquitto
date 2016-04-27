@@ -16,7 +16,6 @@ class mosquitto (
   $group               = $mosquitto::params::group,
   $group_ensure        = $mosquitto::params::group_ensure,
   $package_ensure      = $mosquitto::params::package_ensure,
-  $package_manage      = $mosquitto::params::package_manage,
   $package_name        = $mosquitto::params::package_name,
   $port                = $mosquitto::params::port,
   $service_autorestart = hiera('mosquitto::service_autorestart', $mosquitto::params::service_autorestart),
@@ -30,7 +29,6 @@ class mosquitto (
   $service_stderr_logfile_maxsize = $mosquitto::params::service_stderr_logfile_maxsize,
   $service_stdout_logfile_keep    = $mosquitto::params::service_stdout_logfile_keep,
   $service_stdout_logfile_maxsize = $mosquitto::params::service_stdout_logfile_maxsize,
-  $service_stopsecs    = $mosquitto::params::service_stopsecs,
   $shell               = $mosquitto::params::shell,
   $uid                 = $mosquitto::params::uid,
   $user                = $mosquitto::params::user,
@@ -56,14 +54,12 @@ class mosquitto (
   validate_bool($service_autorestart)
   validate_bool($service_enable)
   validate_string($service_ensure)
-  validate_bool($service_manage)
   validate_string($service_name)
   if !is_integer($service_retries) { fail('The $service_retries parameter must be an integer number') }
   if !is_integer($service_startsecs) { fail('The $service_startsecs parameter must be an integer number') }
   if !is_integer($service_stderr_logfile_keep) {
     fail('The $service_stderr_logfile_keep parameter must be an integer number')
   }
-  if !is_integer($service_stopsecs) { fail('The $service_stopsecs parameter must be an integer number') }
   validate_string($service_stderr_logfile_maxsize)
   if !is_integer($service_stdout_logfile_keep) {
     fail('The $service_stdout_logfile_keep parameter must be an integer number')

@@ -137,7 +137,7 @@ user <%= scope.lookupvar('mosquitto::user') %>
 # address and so will be accessible to all network interfaces.
 # bind_address ip-address/host name
 #bind_address
-<% if scope.lookupvar('mosquitto::bind_address') %>bind_address <%= scope.lookupvar('mosquitto::bind_address') %> %><% end %>
+# <% if scope.lookupvar('mosquitto::bind_address') %>bind_address <%= scope.lookupvar('mosquitto::bind_address') %> %><% end %>
 
 # Port to use for the default listener.
 port <%= scope.lookupvar('mosquitto::port') %>

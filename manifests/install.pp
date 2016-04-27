@@ -26,8 +26,8 @@ class mosquitto::install inherits mosquitto {
   ->
   file { $working_dir:
     ensure       => directory,
-    owner        => $mosquitto::user,
-    group        => $mosquitto::group,
+    owner        => $user,
+    group        => $group,
     mode         => '0750',
     recurse      => true,
     recurselimit => 0,
