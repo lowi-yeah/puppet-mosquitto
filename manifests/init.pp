@@ -8,33 +8,17 @@
 #
 
 class mosquitto (
-
-  $package_name    = $mosquitto::params::package_name,
-  $package_manage  = $mosquitto::params::package_manage,
-  $package_ensure  = $mosquitto::params::package_ensure,
-
-  $etc_directory   = $mosquitto::params::etc_directory,
-  $config          = $mosquitto::params::config,
-  $config_template = $mosquitto::params::config_template,
-  $pid_file        = $mosquitto::params::pid_file,
-
-  $bind_address    = $mosquitto::params::bind_address,
-  $port            = $mosquitto::params::port,
-
-  $base_dir            = $mosquitto::params::base_dir,
+  $bind_address        = $mosquitto::params::bind_address,
   $command             = $mosquitto::params::command,
-  
+  $config              = $mosquitto::params::config,
+  $config_template     = $mosquitto::params::config_template,
   $gid                 = $mosquitto::params::gid,
   $group               = $mosquitto::params::group,
   $group_ensure        = $mosquitto::params::group_ensure,
-  $hostname            = $mosquitto::params::hostname,
-
-  $mosquitto_opts      = $mosquitto::params::mosquitto_opts,
-  $limits_manage       = hiera('mosquitto::limits_manage', $mosquitto::params::limits_manage),
-  $limits_nofile       = $mosquitto::params::limits_nofile,
-  $log_dirs            = $mosquitto::params::log_dirs,
-  $logging_config      = $mosquitto::params::logging_config,
-  $logging_config_template        = $mosquitto::params::logging_config_template,
+  $package_ensure      = $mosquitto::params::package_ensure,
+  $package_manage      = $mosquitto::params::package_manage,
+  $package_name        = $mosquitto::params::package_name,
+  $port                = $mosquitto::params::port,
   $service_autorestart = hiera('mosquitto::service_autorestart', $mosquitto::params::service_autorestart),
   $service_enable      = hiera('mosquitto::service_enable', $mosquitto::params::service_enable),
   $service_ensure      = $mosquitto::params::service_ensure,
@@ -48,10 +32,6 @@ class mosquitto (
   $service_stdout_logfile_maxsize = $mosquitto::params::service_stdout_logfile_maxsize,
   $service_stopsecs    = $mosquitto::params::service_stopsecs,
   $shell               = $mosquitto::params::shell,
-  $system_log_dir      = $mosquitto::params::system_log_dir,
-  $tmpfs_manage        = $mosquitto::params::tmpfs_manage,
-  $tmpfs_path          = $mosquitto::params::tmpfs_path,
-  $tmpfs_size          = $mosquitto::params::tmpfs_size,
   $uid                 = $mosquitto::params::uid,
   $user                = $mosquitto::params::user,
   $user_description    = $mosquitto::params::user_description,
@@ -59,54 +39,37 @@ class mosquitto (
   $user_home           = $mosquitto::params::user_home,
   $user_manage         = hiera('mosquitto::user_manage', $mosquitto::params::user_manage),
   $user_managehome     = hiera('mosquitto::user_managehome', $mosquitto::params::user_managehome),
+  $working_dir         = $mosquitto::params::working_dir,
 ) inherits mosquitto::params {
 
-  validate_string($package_name)
-  validate_string($package_ensure)
-  validate_bool($package_manage)
-
-  validate_string($service_name)
-  validate_string($service_ensure)
-  validate_bool($service_enable)
-  validate_bool($service_manage)
-
-  validate_string($etc_directory)
-  validate_absolute_path($etc_directory)
-
-  validate_string($pid_file)
-  validate_absolute_path($pid_file)
-
-  validate_string($user)
-  validate_string($bind_address)
-  if !is_integer($port) { fail('The $port parameter must be an integer number') }
-
-  validate_absolute_path($base_dir)
+  # $bind_address
   validate_string($command)
   validate_absolute_path($config)
   validate_string($config_template)
-
+  if !is_integer($gid) { fail('The $gid parameter must be an integer number') }
   validate_string($group)
   validate_string($group_ensure)
-  validate_string($hostname)
-
-  validate_bool($limits_manage)
-  if !is_integer($limits_nofile) { fail('The $limits_nofile parameter must be an integer number') }
-  validate_array($log_dirs)
+  validate_string($package_ensure)
+  validate_bool($package_manage)
+  validate_string($package_name)
+  if !is_integer($port) { fail('The $port parameter must be an integer number') }
   validate_bool($service_autorestart)
   validate_bool($service_enable)
+  validate_string($service_ensure)
+  validate_bool($service_manage)
+  validate_string($service_name)
   if !is_integer($service_retries) { fail('The $service_retries parameter must be an integer number') }
   if !is_integer($service_startsecs) { fail('The $service_startsecs parameter must be an integer number') }
   if !is_integer($service_stderr_logfile_keep) {
     fail('The $service_stderr_logfile_keep parameter must be an integer number')
   }
+  if !is_integer($service_stopsecs) { fail('The $service_stopsecs parameter must be an integer number') }
   validate_string($service_stderr_logfile_maxsize)
   if !is_integer($service_stdout_logfile_keep) {
     fail('The $service_stdout_logfile_keep parameter must be an integer number')
   }
   validate_string($service_stdout_logfile_maxsize)
-  if !is_integer($service_stopsecs) { fail('The $service_stopsecs parameter must be an integer number') }
   validate_absolute_path($shell)
-  validate_absolute_path($system_log_dir)
   if !is_integer($uid) { fail('The $uid parameter must be an integer number') }
   validate_string($user)
   validate_string($user_description)
@@ -114,6 +77,7 @@ class mosquitto (
   validate_absolute_path($user_home)
   validate_bool($user_manage)
   validate_bool($user_managehome)
+  validate_absolute_path($working_dir)
 
   include '::mosquitto::users'
   include '::mosquitto::install'

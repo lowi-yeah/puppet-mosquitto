@@ -7,15 +7,7 @@ class mosquitto::config inherits mosquitto {
     owner   => root,
     group   => root,
     mode    => '0644',
-    content => template($mosquitto::config_template),
+    content => template($config_template),
+    require => Class['mosquitto::install']
   }
-
-  # file { $logging_config:
-  #   ensure  => file,
-  #   owner   => root,
-  #   group   => root,
-  #   mode    => '0644',
-  #   content => template($mosquitto::logging_config_template),
-  # }
-
 }

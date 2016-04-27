@@ -30,14 +30,14 @@ describe 'mosquitto' do
 
             it { should contain_group('mosquitto').with({
               'ensure'     => 'present',
-              'gid'        => 53042
+              'gid'        => 53023,
             })}
 
             it { should contain_user('mosquitto').with({
               'ensure'     => 'present',
               'home'       => '/home/mosquitto',
               'shell'      => '/bin/bash',
-              'uid'        => 53042,
+              'uid'        => 53023,
               'comment'    => 'Mosquitto system account',
               'gid'        => 'mosquitto',
               'managehome' => true
@@ -50,12 +50,12 @@ describe 'mosquitto' do
             #  'mode'   => '0755',
             #})}
 
-            it { should contain_file('/var/log/mosquitto').with({
-              'ensure' => 'directory',
-              'owner'  => 'mosquitto',
-              'group'  => 'mosquitto',
-              'mode'   => '0755',
-            })}
+#            it { should contain_file('/var/log/mosquitto').with({
+#              'ensure' => 'directory',
+#              'owner'  => 'mosquitto',
+#              'group'  => 'mosquitto',
+#              'mode'   => '0755',
+#            })}
 
             it { should contain_file(default_broker_configuration_file).with({
                 'ensure' => 'file',
@@ -73,7 +73,7 @@ describe 'mosquitto' do
             it { should contain_supervisor__service('mosquitto').with({
               'ensure'      => 'present',
               'enable'      => true,
-              'command'     => '/opt/mosquitto/bin/mosquitto.sh /etc/mosquitto/mosquitto.conf',
+              'command'     => 'mosquitto /etc/mosquitto/mosquitto.conf',
               'user'        => 'mosquitto',
               'group'       => 'mosquitto',
               'autorestart' => true,
@@ -81,7 +81,7 @@ describe 'mosquitto' do
               'retries'     => 999,
               'stopsignal'  => 'INT',
               'stopasgroup' => true,
-              'stopwait'    => 120,
+              'stopwait'    => 10,
               'stdout_logfile_maxsize' => '20MB',
               'stdout_logfile_keep'    => 5,
               'stderr_logfile_maxsize' => '20MB',
@@ -89,13 +89,6 @@ describe 'mosquitto' do
             })}
           end
 
-          describe "mosquitto with limits_manage enabled on #{osfamily}" do
-            let(:params) {{
-              :limits_manage => true,
-            }}
-            it { should contain_limits__fragment('mosquitto/soft/nofile').with_value(65536) }
-            it { should contain_limits__fragment('mosquitto/hard/nofile').with_value(65536) }
-          end
 
           describe "mosquitto with disabled user management on #{osfamily}" do
             let(:params) {{
