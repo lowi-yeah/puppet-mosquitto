@@ -9,7 +9,7 @@ describe 'mosquitto' do
           :operatingsystem => operatingsystem,
         }}
 
-        default_broker_configuration_file  = '/etc/mosquitto/mosquitto.conf'
+        default_broker_configuration_file  = '/etc/mosquitto/conf.d/mosquitto.conf'
 
         context "with explicit data (no Hiera)" do
 
@@ -73,7 +73,7 @@ describe 'mosquitto' do
             it { should contain_supervisor__service('mosquitto').with({
               'ensure'      => 'present',
               'enable'      => true,
-              'command'     => 'mosquitto /etc/mosquitto/mosquitto.conf',
+              'command'     => 'mosquitto -c /etc/mosquitto/mosquitto.conf -d',
               'user'        => 'mosquitto',
               'group'       => 'mosquitto',
               'autorestart' => true,

@@ -3,7 +3,8 @@
 class mosquitto::params {
   
   $command             = 'mosquitto'
-  $config              = '/etc/mosquitto/mosquitto.conf'
+  $command_params      = '-c /etc/mosquitto/mosquitto.conf -d'
+  $config              = '/etc/mosquitto/conf.d/mosquitto.conf'
   $config_template     = 'mosquitto/mosquitto.conf.erb'
   $gid                 = 53023
   $group               = 'mosquitto'

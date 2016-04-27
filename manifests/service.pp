@@ -12,9 +12,7 @@ class mosquitto::service inherits mosquitto {
         ensure                 => $mosquitto::service_ensure,
         enable                 => $mosquitto::service_enable,
         environment            => '', # this is required as otherwise the copilation fails
-        command                => "${mosquitto::command} ${config}",
-        config_file            => "${config}",
-        # config_file            => undef,
+        command                => "${mosquitto::command} ${mosquitto::command_params}",
         directory              => '/',
         user                   => $mosquitto::user,
         group                  => $mosquitto::group,
