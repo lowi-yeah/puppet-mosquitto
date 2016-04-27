@@ -23,7 +23,7 @@ class mosquitto::service inherits mosquitto {
         stdout_logfile_keep    => $service_stdout_logfile_keep,
         stderr_logfile_maxsize => $service_stderr_logfile_maxsize,
         stderr_logfile_keep    => $service_stderr_logfile_keep,
-        require                => [ Class['mosquitto::config'], , Class['::supervisor'] ],
+        require                => [ Class['mosquitto::config'], Class['::supervisor'] ],
     }
 
     if $service_enable == true {
