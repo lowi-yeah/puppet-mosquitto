@@ -1,12 +1,3 @@
-# == Class: mosquitto
-#
-# Deploys a Mosquitto MQTT broker.
-#
-# === Parameters
-#
-# TODO: Document each class parameter.
-#
-
 class mosquitto (
   $bind_address        = $mosquitto::params::bind_address,
   $command             = $mosquitto::params::command,
@@ -40,7 +31,6 @@ class mosquitto (
   $working_dir         = $mosquitto::params::working_dir,
 ) inherits mosquitto::params {
 
-  # $bind_address
   validate_string($command)
   validate_absolute_path($config)
   validate_string($config_template)
@@ -48,12 +38,12 @@ class mosquitto (
   validate_string($group)
   validate_string($group_ensure)
   validate_string($package_ensure)
-  validate_bool($package_manage)
   validate_string($package_name)
   if !is_integer($port) { fail('The $port parameter must be an integer number') }
   validate_bool($service_autorestart)
-  validate_bool($service_manage)
+  validate_bool($service_enable)
   validate_string($service_ensure)
+  validate_bool($service_manage)
   validate_string($service_name)
   if !is_integer($service_retries) { fail('The $service_retries parameter must be an integer number') }
   if !is_integer($service_startsecs) { fail('The $service_startsecs parameter must be an integer number') }

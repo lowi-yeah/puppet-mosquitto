@@ -36,8 +36,7 @@
 # This should be set to /var/run/mosquitto.pid if mosquitto is
 # being run automatically on boot with an init script and
 # start-stop-daemon or similar.
-<!-- pid_file <%= @pid_file %> -->
-pid_file <%= scope.lookupvar('mosquitto::pid_file') %>
+# pid_file <%= scope.lookupvar('mosquitto::pid_file') %>
 
 # When run as root, drop privileges to this user and its primary
 # group.
@@ -45,7 +44,6 @@ pid_file <%= scope.lookupvar('mosquitto::pid_file') %>
 # If run as a non-root user, this setting has no effect.
 # Note that on Windows this has no effect and so mosquitto should
 # be started by the user you wish it to run as.
-<!-- user <%= @user %> -->
 user <%= scope.lookupvar('mosquitto::user') %>
 
 # The maximum number of QoS 1 and 2 messages currently inflight per
@@ -137,7 +135,6 @@ user <%= scope.lookupvar('mosquitto::user') %>
 # address and so will be accessible to all network interfaces.
 # bind_address ip-address/host name
 #bind_address
-# <% if scope.lookupvar('mosquitto::bind_address') %>bind_address <%= scope.lookupvar('mosquitto::bind_address') %> %><% end %>
 
 # Port to use for the default listener.
 port <%= scope.lookupvar('mosquitto::port') %>

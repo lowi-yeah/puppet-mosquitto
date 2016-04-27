@@ -1,6 +1,10 @@
 # == Class mosquitto::service
 #
-class mosquitto::service inherits mosquitto {
+class mosquitto::service(
+  $service_environment = '',
+) inherits mosquitto {
+
+  validate_string($service_environment)
 
   if ! ($service_ensure in [ 'absent', 'present' ]) {
     fail('service_ensure parameter must be absent or present')
@@ -11,9 +15,9 @@ class mosquitto::service inherits mosquitto {
       $service_name:
         ensure                 => $service_ensure,
         enable                 => $service_enable,
-        environment            => '', # this is required as otherwise the copilation fails
         command                => "${command} ${command_params}",
-        directory              => '/',
+        directory              => $working_dir,
+        environment            => $service_environment,
         user                   => $user,
         group                  => $group,
         autorestart            => $service_autorestart,

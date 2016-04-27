@@ -32,7 +32,7 @@ class mosquitto::params {
   $user_home           = '/home/mosquitto'
   $user_manage         = true
   $user_managehome     = true
-  $working_dir         = '/app/mosquitto'
+  $working_dir         = '/etc/mosquitto'
   case $::osfamily {
     'RedHat': {}
 
