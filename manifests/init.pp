@@ -52,7 +52,7 @@ class mosquitto (
   validate_string($package_name)
   if !is_integer($port) { fail('The $port parameter must be an integer number') }
   validate_bool($service_autorestart)
-  validate_bool($service_enable)
+  validate_bool($service_manage)
   validate_string($service_ensure)
   validate_string($service_name)
   if !is_integer($service_retries) { fail('The $service_retries parameter must be an integer number') }

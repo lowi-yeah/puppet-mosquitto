@@ -1,2 +1,0 @@
----
-mosquitto::embedded_log_dir: '/usr/local/mosquitto/logs'
